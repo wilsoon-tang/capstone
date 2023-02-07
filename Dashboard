@@ -1,0 +1,65 @@
+
+#install.packages("shiny")
+#install.packages("shinydashboard")
+library(shinydashboard)
+library(shiny)
+
+library(spdep)
+library(rgdal)
+library(rgeos)
+library(olsrr)
+
+headerPanel <- dashboardHeader( title = "PM1 - Calgary Micro-mobility",
+                                titleWidth = 450
+)
+
+sidebar <- dashboardSidebar(
+  sidebarMenu(
+    menuItem("Infrastructure", tabName = "dashboard", icon = icon("th")),
+    menuItem("Events and Days of Interest", icon = icon("th"), tabName = "Events"))
+)
+
+body <- dashboardBody(
+
+  #Dashboard 1 
+  
+  fluidRow(
+    box(plotOutput("plot1")),
+    
+    box(
+      "Box content here", br(), "More box content",
+      sliderInput("slider", "Slider input:", 1, 100, 50),
+      textInput("text", "Text input:")
+    )
+  ),
+  
+  tabItems(
+    tabItem(tabName = "Infrastructure",
+            h2("Dashboard tab content"),
+    ),
+    
+    #Dashboard 2
+    
+    
+    tabItem(tabName = "Events",
+            h2("Events and Days of Interest")
+    )
+  )
+)
+
+ui <- dashboardPage(headerPanel,sidebar, body)
+
+# #map for the city of Calgary
+#  leaflet() %>% # this operator is called pipe, which means then
+#   addTiles() %>% #load background image
+#   addCircleMarkers(data = ? = ~LONGITUDE, lat = ~LATITUDE,
+#                    radius =0.5,
+#                    label = ~STATION_NUMBER)
+
+
+
+
+
+Server1 <- function(input, output)
+{}
+shinyApp(ui, Server1)
