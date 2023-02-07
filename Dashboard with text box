@@ -1,0 +1,79 @@
+library(shinydashboard)
+library(shiny)
+
+library(spdep)
+library(rgdal)
+library(rgeos)
+library(olsrr)
+
+headerPanel <- dashboardHeader( title = "PM1 - Calgary Micro-mobility",
+                                titleWidth = 450
+)
+
+sidebar <- dashboardSidebar(
+  sidebarMenu(
+    menuItem("Infrastructure", tabName = "dashboard", icon = icon("th")),
+    menuItem("Events and Days of Interest", icon = icon("th"), tabName = "Events"))
+)
+
+body <- dashboardBody(
+  
+  #Dashboard 1 
+  
+  fluidRow( 
+    box(title = 'Map', status = 'primary',solidHeader = TRUE, plotOutput("plot1")),
+    
+    box(
+      "Box content here", br(), "More box content",
+      sliderInput("slider", "Slider input:", 1, 100, 50),
+      textInput("text", "Text input:")
+    ),
+    box(
+    dateRangeInput(  inputId='Date Range',
+                     label='Date Range',
+                     start = NULL, # adjust to make the first day of our data.
+                     end = NULL, # adjust to make the last day of our data
+                     min = NULL,# adjust to make the first day of our data
+                     max = NULL,# adjust to make the last day of our data
+                     format = "yyyy-mm-dd",
+                     startview = "month",
+                     weekstart = 0,
+                     language = "en",
+                     separator = " to ",
+                     width = NULL,
+                     autoclose = TRUE
+    )  
+    )
+  ),
+  
+  tabItems(
+    tabItem(tabName = "dashboard",
+            h2("Dashboard tab content"),
+    ),
+    
+    #Dashboard 2
+    
+    
+    tabItem(tabName = "Events",
+            h2("Events and Days of Interest")
+    )
+  )
+)
+
+ui <- dashboardPage(headerPanel,sidebar, body)
+
+# #map for the city of Calgary
+#  leaflet() %>% # this operator is called pipe, which means then
+#   addTiles() %>% #load background image
+#   addCircleMarkers(data = ? = ~LONGITUDE, lat = ~LATITUDE,
+#                    radius =0.5,
+#                    label = ~STATION_NUMBER)
+
+
+
+
+
+Server1 <- function(input, output)
+{}
+shinyApp(ui, Server1)
+
