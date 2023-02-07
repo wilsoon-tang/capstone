@@ -1,0 +1,27 @@
+library(sf)
+library(dplyr)
+library(leaflet)
+
+hexagons <- st_read("C:/Users/wtang/Downloads/Data/Essential Data/150m Hexagon Shapes/Spatial Shape Data (3)/polygons.shp")
+
+
+trips <- read.csv("C:/Users/wtang/Downloads/Data/Essential Data/Origin Av Distance by year/Trip counts for Hexagon Grid 150m from 1_1_2021 to 12_31_2021 - Av Origin Distance.csv")
+trips <- trips %>% 
+  rename(name = total.count.6293.040000000014)
+
+
+hexagoon <-full_join(hexagons, trips, by = "name")
+
+
+
+p_popup <- paste0("<strong> Trip Density: </strong>", hexagoon$operator.all)
+
+
+
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = hexagoon,
+              fillColor = "red", fillOpacity = 0.5, weight = 1,
+              color = "white", opacity = 1,
+              layerId = hexagoon$operator.all,
+              popup = p_popup)
