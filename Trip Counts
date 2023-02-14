@@ -1,0 +1,53 @@
+library(sf)
+library(leaflet)
+library(tidyverse)
+
+hexagons <- st_read("C:/Users/wtang/Downloads/Data/Essential Data/150m Hexagon Shapes/Spatial Shape Data (3)/polygons.shp")
+
+#look to the right, skip moves 1 row down to read
+trips <- read.csv("C:/Users/wtang/Downloads/Data/Essential Data/Operator Drop Offs by year/Operator drop-off counts for Hexagon Grid 150m from 1_1_2021 to 12_31_2021.csv", skip = 1)
+
+colnames(trips)[1] <- "date"
+
+#Column with hexagon shape id
+colnames(trips)[5] <- "name"
+colnames(trips)[6] <- "operator.all"
+
+#combines .shp and .csv
+hexagoon <-full_join(hexagons, trips, by = "name")
+hexagoon <- hexagoon[!is.na(hexagoon$operator.all),]
+
+#function for the pop up to label the # of trips
+p_popup <- sprintf("Trip count: %d", hexagoon$operator.all)
+bins <- c(1, 2, 3, 4, 5, 6, 7, 8, Inf)
+pal <- colorBin("YlOrRd", domain = hexagoon$operator.all, bins = bins)
+
+#map portion
+
+leaflet() %>%
+  #Option to add default tiles or other provider tiles 
+  
+  setView(	-114.066666, 51.049999, 16) %>%
+  addProviderTiles( "CartoDB.Positron",
+                       group = "CartoDB.Positron") %>%
+  
+  addPolygons(data = hexagoon,
+              fillColor = ~pal(operator.all),
+              weight = .3,
+              opacity = .3,
+              color = "white",
+              dashArray = "3",
+              fillOpacity = 0.7,
+              highlightOptions = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.7,
+                bringToFront = TRUE),
+              layerId = hexagoon$operator.all,
+              label= p_popup,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "15px",
+                direction = "auto")) 
+#add legend
